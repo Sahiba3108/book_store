@@ -71,3 +71,17 @@ func (bs *BookStore) SearchBooks(name string) []models.Book {
 	}
 	return results
 }
+
+// New method to search books by author (case-insensitive).
+func (bs *BookStore) SearchBooksByAuthor(author string) []models.Book {
+	bs.mu.Lock()
+	defer bs.mu.Unlock()
+	var results []models.Book
+	lowerAuthor := strings.ToLower(author)
+	for _, book := range bs.books {
+		if strings.Contains(strings.ToLower(book.Author), lowerAuthor) {
+			results = append(results, book)
+		}
+	}
+	return results
+}

@@ -9,6 +9,7 @@ import (
 func SetupRoutes(app *fiber.App) {
 	app.Get("/api/books", getBooks)
 	app.Get("/api/books/search", searchBooks)
+	app.Get("/api/books/search/author", searchBooksByAuthor)
 	app.Post("/api/books", addBook)
 	app.Put("/api/books", updateBook)
 	app.Delete("/api/books", deleteBook)
@@ -66,5 +67,14 @@ func searchBooks(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Search parameter 'name' is required.")
 	}
 	books := services.Store.SearchBooks(name)
+	return c.JSON(books)
+}
+
+func searchBooksByAuthor(c *fiber.Ctx) error {
+	author := c.Query("author")
+	if author == "" {
+		return c.Status(fiber.StatusBadRequest).SendString("Search parameter 'author' is required.")
+	}
+	books := services.Store.SearchBooksByAuthor(author)
 	return c.JSON(books)
 }
