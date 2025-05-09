@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log"
 	"test/services"
 
 	"github.com/gofiber/fiber/v2"
@@ -52,11 +53,15 @@ func deleteBook(c *fiber.Ctx) error {
 		Id int `json:"id"`
 	}
 	if err := c.BodyParser(&payload); err != nil || payload.Id == 0 {
+		log.Println("deleteBook: invalid request payload")
 		return c.Status(fiber.StatusBadRequest).SendString("ID is required.")
 	}
+	log.Printf("deleteBook: attempting to delete book with id %d", payload.Id)
 	if err := services.Store.DeleteBook(payload.Id); err != nil {
+		log.Printf("deleteBook: error deleting book with id %d: %v", payload.Id, err)
 		return c.Status(fiber.StatusInternalServerError).SendString("Error deleting book")
 	}
+	log.Printf("deleteBook: successfully deleted book with id %d", payload.Id)
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
